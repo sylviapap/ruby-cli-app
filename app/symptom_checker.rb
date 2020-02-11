@@ -24,6 +24,3 @@ end
 
 query = run_symptom_checker
 get_symptom_hash(query)
-
-# binding.pry
-puts 'hi'
