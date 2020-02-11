@@ -1,5 +1,4 @@
-require_relative '../config/environment'
+# require_relative '../config/environment'
+require_relative '../app/symptom_checker.rb'
 
-
-
-puts "HELLO WORLD"
+run_symptom_checker
