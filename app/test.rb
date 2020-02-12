@@ -15,7 +15,9 @@ info = RestClient.get("https://api.infermedica.com/v2/info", headers={'App-Id' =
 risk_factors = RestClient.get("https://api.infermedica.com/v2/risk_factors", headers={'App-Id' => app_id, 'App-Key' => app_key})
 
 search = RestClient.get("https://api.infermedica.com/v2/search?phrase=cough", headers={'App-Id' => app_id, 'App-Key' => app_key})
+
 search_hash = JSON.parse(search)
+
 new_array = search_hash.map do |hash|
     hash.delete_if {|key, value| key >= "label"}
     end
@@ -38,6 +40,10 @@ payload = JSON.generate(data_hash)
 diagnosis = RestClient.post("https://api.infermedica.com/v2/diagnosis", payload, headers = {'App-Id' => app_id, 'App-Key' => app_key, 'Content-Type' => 'application/json'})
 
 diagnosis_hash = JSON.parse(diagnosis)
+
+def process_user_input(user_input)
+  user_input.split(" ").join("+")
+end
 
 binding.pry
 puts 'hi'
