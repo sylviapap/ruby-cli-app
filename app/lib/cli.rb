@@ -13,7 +13,8 @@ def run_symptom_checker
     age_input = gets.chomp
     puts "Enter your symptoms. If this is an emergency please hang up and dial 911"
     symptom_input = gets.chomp
-    Patient.find_or_create_and_save(name_input, age_input, sex_input,symptom_input)
+    # patient = Patient.create(name: name_input, age: age_input, sex: sex_input)
+    # binding.pry
     # process_symptom_input(symptom_input)
     get_diagnosis_hash(sex_input, age_input, symptom_input)
 end
@@ -30,8 +31,9 @@ def get_symptom_hash(symptom_input)
     app_id = '582e2307'
     app_key = 'c98b58a9bf15795b1dacdfebe5375701'
     response = RestClient.get("https://api.infermedica.com/v2/search?phrase=#{symptom_input}", headers={'App-Id' => app_id, 'App-Key' => app_key})
-    symptom_hash = JSON.parse(response)
-    symptom_hash
+    response_array = JSON.parse(response)
+    # symptom_names_array = response_array.map{ |hash| hash["label"]}
+    # Symptom.create(patient_id: patient.id, disease_id: disease.id, name: symptom_hash[""])
     # symptoms = symptom_hash.map{ |hash| hash["label"] }
     # puts symptoms
 end
@@ -58,9 +60,13 @@ def get_diagnosis_hash(sex_input, age_input, symptom_input)
     # PatientDisease.create(patient_id, disease_id, diagnosis_names)
 end
 
+def run
+
+end
+
 # binding.pry
 # query = run_symptom_checker
     # binding.pry
 # get_diagnosis_hash(query)
 
-puts "hello"
+# puts "hello"

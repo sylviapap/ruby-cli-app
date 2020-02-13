@@ -4,7 +4,6 @@ class CreatePatients < ActiveRecord::Migration[5.0]
             p.string :name
             p.integer :age
             p.string :sex
-            p.string :symptoms
         end
     end
 end
