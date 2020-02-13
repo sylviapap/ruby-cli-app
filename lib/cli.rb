@@ -1,17 +1,21 @@
 require 'pry'
 require 'rest-client'
 require 'json'
+# require_relative '../config/environment.rb'
 
 def run_symptom_checker
     puts "Welcome to Symptom Checker"
+    puts "Please enter your name"
+    name_input = gets.chomp
     puts "Please enter male or female"
     sex_input = gets.chomp
     puts "Please enter your age"
     age_input = gets.chomp
     puts "Enter your symptoms. If this is an emergency please hang up and dial 911"
     symptom_input = gets.chomp
+    Patient.find_or_create_and_save(name_input, age_input, sex_input,symptom_input)
     # process_symptom_input(symptom_input)
-    get_diagnosis_hash(sex_input, symptom_input)
+    get_diagnosis_hash(sex_input, age_input, symptom_input)
 end
 
 # def process_symptom_input(symptom_input)
@@ -32,7 +36,7 @@ def get_symptom_hash(symptom_input)
     # puts symptoms
 end
 
-def get_diagnosis_hash(sex_input, symptom_input)
+def get_diagnosis_hash(sex_input, age_input, symptom_input)
     app_id = '582e2307'
     app_key = 'c98b58a9bf15795b1dacdfebe5375701'
     new_array = get_symptom_hash(symptom_input).map do |hash|
@@ -41,18 +45,21 @@ def get_diagnosis_hash(sex_input, symptom_input)
     array_of_hashes = new_array.each {|hash| hash['choice_id'] = 'present'}
     data_hash = {
     'sex' => sex_input,
-    'age' => 40,
+    'age' => age_input,
     'evidence' => array_of_hashes
     }
     payload = JSON.generate(data_hash)
     response = RestClient.post("https://api.infermedica.com/v2/diagnosis", payload, headers={'App-Id' => app_id, 'App-Key' => app_key, 'Content-Type' => 'application/json'})
     diagnosis_hash = JSON.parse(response)
-    puts diagnosis_hash
-    # diagnoses = diagnosis_hash.map{ |hash| hash[:conditions]}
+    puts diagnosis_hash["conditions"]
+    diagnosis_names = diagnosis_hash["conditions"].map { |cond| cond["name"]}
+    # binding.pry
+    # Disease.create(diagnosis_names)
+    # PatientDisease.create(patient_id, disease_id, diagnosis_names)
 end
 
 # binding.pry
-query = run_symptom_checker
+# query = run_symptom_checker
     # binding.pry
 # get_diagnosis_hash(query)
 

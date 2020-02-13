@@ -1,4 +1,4 @@
 # require_relative '../config/environment'
-require_relative '../app/symptom_checker.rb'
+require_relative '../lib/cli.rb'
 
 run_symptom_checker
