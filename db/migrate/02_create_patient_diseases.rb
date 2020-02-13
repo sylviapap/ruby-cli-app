@@ -6,4 +6,4 @@ class CreatePatientDiseases < ActiveRecord::Migration[5.0]
             p.string :name
         end
     end
-end
+end 

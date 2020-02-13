@@ -30,7 +30,6 @@ ActiveRecord::Schema.define(version: 20200213174208) do
 
   create_table "symptoms", force: :cascade do |t|
     t.integer "patient_id"
-    t.integer "disease_id"
     t.string  "name"
   end
 
