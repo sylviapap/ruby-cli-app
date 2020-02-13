@@ -1,7 +1,7 @@
-class CreateDisease < ActiveRecord::Migration [5.2]
+class CreateDiseases < ActiveRecord::Migration[5.0]
     def change
         create_table :diseases do |d|
             d.string :name
-            d.text :symptom
+        end
     end
 end
