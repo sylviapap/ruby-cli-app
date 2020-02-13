@@ -1,8 +1,6 @@
 class Patient < ActiveRecord::Base
-    has_many :diseases
-    has_many :symptoms, through: :diseases
-
-    def find_or_create_and_save
-        Patient.create
-    end
+    has_many :patient_diseases
+    has_many :symptoms
+    has_many :diseases, through: :patient_diseases
+    has_many :diseases, through: :symptoms
 end

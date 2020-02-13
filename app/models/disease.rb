@@ -1,6 +1,7 @@
 class Disease < ActiveRecord::Base
-    has_many :patients
-    has_many :patient_diseases, through: :patients
+    has_many :patient_diseases
+    has_many :patients, through: :patient_diseases
+    has_many :symptoms
+    has_many :patients, through: :symptoms
 
-    
 end
