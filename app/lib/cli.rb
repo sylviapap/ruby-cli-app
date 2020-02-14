@@ -47,17 +47,17 @@ def welcome
     puts "3  -  To search from a list of risk factors, enter 3."
     puts "4  -  To search for a possible disease, enter 4"
     puts "5  -  To view saved diseases, enter 5."
-    puts "6  -  To return to main menu, enter 6."
-    puts "7  -  To exit Symptom Checker, enter any other key."
+    puts "6  -  To return to main menu, enter 6."  
+    puts "7  -  To exit Symptom Wizard, enter any other key."
     response = gets.chomp
     if response == "1"
         run_symptom_checker
     elsif response == "2"
         result = Disease.pluck(:name)  
-        puts result
-        puts "Press 0 to return to Symptom Checker"
+        puts format(result)
+        puts "Enter 9 to return to Symptom Wizard"
         response_after_listing_diseases = gets.chomp
-        if response_after_listing_diseases == "0"
+        if response_after_listing_diseases == "9"
             welcome
         end
         format(result)
@@ -70,20 +70,30 @@ def welcome
         rf_json = JSON.parse(rf_req)
         rf_result = rf_json.map{ |hash| hash["label"]}
         puts format(rf_result)
+        puts "Enter 9 to return to Symptom Wizard"
+        risk_response = gets.chomp
+        if risk_response == "9"
+            welcome
+        end
     elsif response == "4"
         puts "Enter the disease you'd like to search for."
         search_res = gets.chomp.capitalize
         disease_res = Disease.where("name like ?", "%#{search_res}%")
-        puts disease_res.map(&:name)
-        puts "Enter 9 to run Symptom Wizard again."
+        puts format(disease_res.map(&:name))
+        puts "Enter 9 to return to Symptom Wizard."
         run_again = gets.chomp
         if run_again == "9"
             welcome
-        end
-    elsif response == "6"    
-        welcome   
+        end  
     elsif response == "5"
         view_patient_diseases
+        puts "Enter 9 to return to Symptom Wizard"
+        pd_response = gets.chomp
+        if pd_response == "9"
+            welcome
+        end
+    elsif response == "6"    
+        welcome 
     end
 end
 
@@ -154,7 +164,7 @@ def run_symptom_checker
         ###### continue prompts
 
     puts ""
-    puts "Enter 9 to run Symptom Checker again."
+    puts "Enter 9 to run Symptom Wizard again."
     puts ""
     puts "Enter 5 to view all of your possible diseases."
     puts ""
@@ -201,9 +211,9 @@ def view_patient_diseases
     patient_diseases = PatientDisease.where(patient_id: patient.id)
     result = patient_diseases.map {|pd| Disease.where(id: pd.disease_id).pluck(:name)}
     puts format(result)
+    puts "Enter 9 to return to Symptom Wizard."
+    vpd_response = gets.chomp
+    if vpd_response == "9"
+        welcome
+    end
 end
-
-# binding.pry
-# puts 'hi'
-
-####### api free trial expires - should seed db with diseases, symptoms, risk_factors
