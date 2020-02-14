@@ -72,6 +72,9 @@ def welcome
         app_key = "c98b58a9bf15795b1dacdfebe5375701"
         rf_req = RestClient.get("https://api.infermedica.com/v2/search?phrase=#{rfsearch}&type=risk_factor", headers={'App-Id' => app_id, 'App-Key' => app_key})
         rf_json = JSON.parse(rf_req)
+        if rf_json.empty?
+            format("Nothing found!")
+        end
         rf_result = rf_json.map{ |hash| hash["label"]}
         puts format(rf_result)
         puts "Press 6 to return to main menu"
@@ -90,7 +93,7 @@ def welcome
         end
     elsif response == "6"    
         welcome
-    else response 
+    elsif response 
     end
 end
 
@@ -99,13 +102,16 @@ def disease_search
     puts "Enter the disease you'd like to search for:"
     search_res = gets.chomp.capitalize
     disease_res = Disease.where("name like ?", "%#{search_res}%")
+    if disease_res.empty?
+        format("Nothing found!")
+    end
     puts format(disease_res.map(&:name))
     puts "Press 4 to search diseases again."
     puts "Press any other key to return to main menu."
     run_again = STDIN.getch
     if run_again == "4"
         disease_search
-    else
+    elsif run_again
         welcome
     end
 end
@@ -141,6 +147,9 @@ def run_symptom_checker
     
     symptom_request = RestClient.get("https://api.infermedica.com/v2/search?phrase=#{symptom_input}&type=symptom", headers={'App-Id' => app_id, 'App-Key' => app_key})
     symptom_json = JSON.parse(symptom_request)
+    if symptom_json.empty?
+        format("Nothing found!")
+    end
 
         ######### save symptoms
 
@@ -168,7 +177,11 @@ def run_symptom_checker
     d_request = RestClient.post("https://api.infermedica.com/v2/diagnosis", payload, headers={'App-Id' => app_id, 'App-Key' => app_key, 'Content-Type' => 'application/json'})
     d_json = JSON.parse(d_request)
     d_names = d_json["conditions"].map { |cond| cond["name"]}
-    format(d_names)
+    if d_names.empty?
+        format("No diagnosis found! Sorry")
+    else
+        format(d_names)
+    end
     d_names.each do |name| 
         disease = Disease.find_by(name: name)
         PatientDisease.find_or_create_by(patient_id: patient.id, disease_id: disease.id)
@@ -188,7 +201,7 @@ def run_symptom_checker
         run_symptom_checker
     elsif num_response == "5"
         view_patient_diseases
-    elsif
+    elsif num_response
         welcome
     end
 end
@@ -198,10 +211,14 @@ end
 def view_patient_diseases
     puts format("Enter your name (exactly as you entered before)")
     name_input = gets.chomp
-    patient = Patient.find_by(name: name_input)
+    patient = Patient.find_or_create_by(name: name_input)
     patient_diseases = PatientDisease.where(patient_id: patient.id)
-    result = patient_diseases.map {|pd| Disease.where(id: pd.disease_id).pluck(:name)}
-    puts format(result)
+    if patient_diseases.empty?
+        format("None found! Sorry")
+    else
+        result = patient_diseases.map {|pd| Disease.where(id: pd.disease_id).pluck(:name)}
+        format(result)
+    end
     puts "Press any key to return to main menu."
     vpd_response = STDIN.getch
     if vpd_response
