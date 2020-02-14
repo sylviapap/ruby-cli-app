@@ -28,6 +28,12 @@ search = RestClient.get("https://api.infermedica.com/v2/search?phrase=#{search_t
 search_hash = JSON.parse(search)
 ###
 
+### search risk factors
+rfsearch = "injury"
+rf_req = RestClient.get("https://api.infermedica.com/v2/search?phrase=#{rfsearch}&type=risk_factor", headers={'App-Id' => app_id, 'App-Key' => app_key})
+rf_result = JSON.parse(rf_req)
+###
+
 ### risk factors
 risk_factors = RestClient.get("https://api.infermedica.com/v2/risk_factors", headers={'App-Id' => app_id, 'App-Key' => app_key})
 risk_factors_hash = JSON.parse(risk_factors)
@@ -49,6 +55,8 @@ payload = JSON.generate(data_hash)
 diagnosis = RestClient.post("https://api.infermedica.com/v2/diagnosis", payload, headers = {'App-Id' => app_id, 'App-Key' => app_key, 'Content-Type' => 'application/json'})
 diagnosis_hash = JSON.parse(diagnosis)
 ###
+
+
 
 binding.pry
 puts 'hi'

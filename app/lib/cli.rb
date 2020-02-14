@@ -43,7 +43,7 @@ end
 def welcome
     puts "1  -  To check your symptoms against potential diseases, enter 1."
     puts "2  -  To view all possible diseases in the database, enter 2."
-    puts "3  -  To view all possible symptoms, enter 3."
+    puts "3  -  To search from a list of risk factors, enter 3."
     puts "4  -  To return to main menu, enter 4."
     puts "5  -  To exit Symptom Checker, enter any other key."
     response = gets.chomp
@@ -53,7 +53,14 @@ def welcome
         result = Disease.pluck(:name)  
         format(result)
     elsif response == "3"
-        ## get seeded symptom data from db
+        puts "Search for risk factors. I.e. enter 'injury'."
+        rfsearch = gets.chomp
+        app_id = "582e2307"
+        app_key = "c98b58a9bf15795b1dacdfebe5375701"
+        rf_req = RestClient.get("https://api.infermedica.com/v2/search?phrase=#{rfsearch}&type=risk_factor", headers={'App-Id' => app_id, 'App-Key' => app_key})
+        rf_json = JSON.parse(rf_req)
+        rf_result = rf_json.map{ |hash| hash["label"]}
+        puts format(rf_result)
     elsif response == "4"
         welcome   
     end
