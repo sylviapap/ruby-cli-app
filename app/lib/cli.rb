@@ -41,16 +41,28 @@ def format(result)
 end
 
 def welcome
+    puts "Welcome to Symptom Checker"
+    puts "To check your symptoms against potential diseases, press 1."
+    puts "To view all possible diseases in the database, press 2."
+    puts "To search the list of diseases, press 3."
+    puts "To exit Symptom Checker, press any other key."
     puts "1  -  To check your symptoms against potential diseases, enter 1."
     puts "2  -  To view all possible diseases in the database, enter 2."
     puts "3  -  To search from a list of risk factors, enter 3."
-    puts "4  -  To return to main menu, enter 4."
-    puts "5  -  To exit Symptom Checker, enter any other key."
+    puts "4  -  To search for a possible disease, enter 4"
+    puts "5  -  To return to main menu, enter 5."
+    puts "6  -  To exit Symptom Checker, enter any other key."
     response = gets.chomp
     if response == "1"
         run_symptom_checker
     elsif response == "2"
         result = Disease.pluck(:name)  
+        puts result
+        puts "Press 0 to return to Symptom Checker"
+        response_after_listing_diseases = gets.chomp
+        if response_after_listing_diseases == "0"
+            welcome
+        end
         format(result)
     elsif response == "3"
         puts "Search for risk factors. I.e. enter 'injury'."
@@ -62,6 +74,16 @@ def welcome
         rf_result = rf_json.map{ |hash| hash["label"]}
         puts format(rf_result)
     elsif response == "4"
+        puts "Enter the disease you'd like to search for."
+        search_res = gets.chomp.capitalize
+        disease_res = Disease.where("name like ?", "%#{search_res}%")
+        puts disease_res.map(&:name)
+        puts "Enter 9 to run Symptom Wizard again."
+        run_again = gets.chomp
+        if run_again == "9"
+            welcome
+        end
+    elsif response == "5"    
         welcome   
     end
 end
@@ -95,12 +117,6 @@ def run_symptom_checker
         view_patient_diseases
     end
 end
-
-# def run_again
-#     #might need this to avoid duplicates?
-#     puts "Enter a symptom"
-#     symptom_input = gets.chomp
-# end
 
 def get_symptoms(symptom_input)
     app_id = "582e2307"
@@ -150,4 +166,10 @@ def view_patient_diseases
 end
 
 # binding.pry
+
+# query = run_symptom_checker
+    # binding.pry
+# get_diagnosis_hash(query)
+
+# puts "hello"
 # puts 'hi'
