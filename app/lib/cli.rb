@@ -1,6 +1,7 @@
 require 'pry'
 require 'rest-client'
 require 'json'
+require 'io/console'
 
 def start
     curly_break
@@ -42,27 +43,30 @@ end
 
 def welcome
     puts ""
-    puts "1  -  To check your symptoms against potential diseases, enter 1."
-    puts "2  -  To view all possible diseases in the database, enter 2."
-    puts "3  -  To search from a list of risk factors, enter 3."
-    puts "4  -  To search for a possible disease, enter 4"
-    puts "5  -  To view saved diseases, enter 5."
-    puts "6  -  To return to main menu, enter 6."  
-    puts "7  -  To exit Symptom Wizard, enter any other key."
-    response = gets.chomp
+    puts "1  -  To check your symptoms against potential diseases, Press 1."
+    puts "2  -  To view all possible diseases in the database, Press 2."
+    puts "3  -  To search from a list of risk factors, Press 3."
+    puts "4  -  To search for a possible disease, Press 4."
+    puts "5  -  To view saved diseases, Press 5."
+    puts "6  -  To return to main menu, Press 6."  
+    puts "7  -  To exit Symptom Wizard, Press any other key."
+    puts ""
+    response = STDIN.getch
     if response == "1"
         run_symptom_checker
     elsif response == "2"
         result = Disease.pluck(:name)  
-        puts format(result)
-        puts "Enter 9 to return to Symptom Wizard"
-        response_after_listing_diseases = gets.chomp
-        if response_after_listing_diseases == "9"
-            welcome
-        end
         format(result)
+        puts "Press 4 to search for a disease."
+        puts "Press 6 to return to main menu."
+        response_after_listing_diseases = STDIN.getch
+        if response_after_listing_diseases == "6"
+            welcome
+        elsif response_after_listing_diseases == "4"
+            disease_search
+        end
     elsif response == "3"
-        puts "Search for risk factors. I.e. enter 'injury'."
+        puts "Search for risk factors. For example, enter 'injury'"
         rfsearch = gets.chomp
         app_id = "582e2307"
         app_key = "c98b58a9bf15795b1dacdfebe5375701"
@@ -70,31 +74,38 @@ def welcome
         rf_json = JSON.parse(rf_req)
         rf_result = rf_json.map{ |hash| hash["label"]}
         puts format(rf_result)
-        puts "Enter 9 to return to Symptom Wizard"
-        risk_response = gets.chomp
-        if risk_response == "9"
+        puts "Press 6 to return to main menu"
+        risk_response = STDIN.getch
+        if risk_response == "6"
             welcome
         end
     elsif response == "4"
-        puts "Enter the disease you'd like to search for."
-        search_res = gets.chomp.capitalize
-        disease_res = Disease.where("name like ?", "%#{search_res}%")
-        puts format(disease_res.map(&:name))
-        puts "Enter 9 to return to Symptom Wizard."
-        run_again = gets.chomp
-        if run_again == "9"
-            welcome
-        end  
+        disease_search
     elsif response == "5"
         view_patient_diseases
-        puts "Enter 9 to return to Symptom Wizard"
-        pd_response = gets.chomp
-        if pd_response == "9"
+        puts "Press 6 to return to main menu"
+        pd_response = STDIN.getch
+        if pd_response == "6"
             welcome
         end
     elsif response == "6"    
         welcome 
     end
+end
+
+def disease_search
+    puts "Enter the disease you'd like to search for:"
+    search_res = gets.chomp.capitalize
+    disease_res = Disease.where("name like ?", "%#{search_res}%")
+    puts format(disease_res.map(&:name))
+    puts "Press 4 to search diseases again."
+    puts "Press 6 to return to main menu."
+    run_again = STDIN.getch
+    if run_again == "6"
+        welcome
+    elsif run_again == "4"
+        disease_search
+    end 
 end
 
 def run_symptom_checker
@@ -106,18 +117,18 @@ def run_symptom_checker
 
         ##### prompts and inputs
 
-    puts "Please enter your name"
+    puts "Please enter your name:"
     name_input = gets.chomp
-    puts "Please enter 'male' or 'female'"
+    puts "Please enter 'male' or 'female':"
     sex_input = gets.chomp.downcase
     while sex_input != "male" && sex_input != "female"
         puts "Not a valid entry!"
-        puts "Please enter 'male' or 'female'"
+        puts "Please enter 'male' or 'female':"
         sex_input = gets.chomp.downcase
     end
-    puts "Please enter your age"
+    puts "Please enter your age:"
     age_input = gets.chomp.to_i
-    puts "Enter a symptom"
+    puts "Enter a symptom (i.e. 'cough')"
     symptom_input = gets.chomp
         
         ######## save patient
@@ -164,13 +175,13 @@ def run_symptom_checker
         ###### continue prompts
 
     puts ""
-    puts "Enter 9 to run Symptom Wizard again."
+    puts "Press 9 to run Symptom Wizard again."
     puts ""
-    puts "Enter 5 to view all of your possible diseases."
+    puts "Press 5 to view all of your possible diseases."
     puts ""
-    puts "Enter any other key to exit."
+    puts "Press any other key to exit."
     puts ""
-    num_response = gets.chomp
+    num_response = STDIN.getch
     if num_response == "9"
         run_symptom_checker
     end
@@ -181,29 +192,6 @@ end
 
     ######## end symptom checker main
 
-# def get_diagnosis(sex_input, age_input, symptom_input, patient)
-#     app_id = "582e2307"
-#     app_key = "c98b58a9bf15795b1dacdfebe5375701"
-#     new_array = get_symptoms(symptom_input).map do |hash|
-#         hash.delete_if {|key, value| key >= "label"}
-#         end
-#     array_of_hashes = new_array.each {|hash| hash['choice_id'] = 'present'}
-#     data_hash = {
-#     'sex' => sex_input,
-#     'age' => age_input,
-#     'evidence' => array_of_hashes
-#     }
-#     payload = JSON.generate(data_hash)
-#     response = RestClient.post("https://api.infermedica.com/v2/diagnosis", payload, headers={'App-Id' => app_id, 'App-Key' => app_key, 'Content-Type' => 'application/json'})
-#     diagnosis_hash = JSON.parse(response)
-#     diagnosis_names = diagnosis_hash["conditions"].map { |cond| cond["name"]}
-#     format(diagnosis_names)
-#     diagnosis_names.each do |name| 
-#         disease = Disease.find_by(name: name)
-#         PatientDisease.find_or_create_by(patient_id: patient.id, disease_id: disease.id)
-#     end
-# end
-
 def view_patient_diseases
     puts format("Enter your name (exactly as you entered before)")
     name_input = gets.chomp
@@ -211,9 +199,9 @@ def view_patient_diseases
     patient_diseases = PatientDisease.where(patient_id: patient.id)
     result = patient_diseases.map {|pd| Disease.where(id: pd.disease_id).pluck(:name)}
     puts format(result)
-    puts "Enter 9 to return to Symptom Wizard."
-    vpd_response = gets.chomp
-    if vpd_response == "9"
+    puts "Press 6 to return to main menu."
+    vpd_response = STDIN.getch
+    if vpd_response == "6"
         welcome
     end
 end
