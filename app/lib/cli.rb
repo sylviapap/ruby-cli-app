@@ -23,7 +23,6 @@ def welcome
     elsif response == "9"
         welcome   
     end
- 
 end
 
 def run_symptom_checker
@@ -36,31 +35,17 @@ def run_symptom_checker
     puts "Enter your symptoms. If this is an emergency please hang up and dial 911"
     symptom_input = gets.chomp
     # patient = Patient.create(name: name_input, age: age_input, sex: sex_input)
-    # binding.pry
+    # 
     # process_symptom_input(symptom_input)
-    get_diagnosis_hash(sex_input, age_input, symptom_input)
+    patient = save_patient(name_input, age_input, sex_input)
+    get_diagnosis_hash(sex_input, age_input, symptom_input, patient)
     puts "Press 9 to run Symptom Checker again."
     num_response = gets.chomp
     if num_response == "9"
         welcome
     end
-end
-
-# def get_disease_data_from_api
-#     app_id = '582e2307'
-#     app_key = 'c98b58a9bf15795b1dacdfebe5375701'
     
-#     result = RestClient.get("https://api.infermedica.com/v2/conditions", headers={'App-Id' => app_id, 'App-Key' => app_key})
-#     disease_array = JSON.parse(result)
-#     name_array = disease_array.map do |hash|
-#         hash.select {|key, value| key >= "name"}
-#         end
-#     name_array.each {|disease| Disease.create(name: disease["name"])}
-# end
-
-# def process_symptom_input(symptom_input)
-#     symptom_input.split(" ").join("+")
-# end
+end
 
 def process_age_input(age_input)
     age_input.to_i
@@ -77,7 +62,11 @@ def get_symptom_hash(symptom_input)
     # puts symptoms
 end
 
-def get_diagnosis_hash(sex_input, age_input, symptom_input)
+def save_patient(name_input, age_input, sex_input)
+    Patient.find_or_create_by(name: name_input, age: age_input, sex: sex_input)
+end
+
+def get_diagnosis_hash(sex_input, age_input, symptom_input, patient)
     app_id = '582e2307'
     app_key = 'c98b58a9bf15795b1dacdfebe5375701'
     new_array = get_symptom_hash(symptom_input).map do |hash|
@@ -92,20 +81,19 @@ def get_diagnosis_hash(sex_input, age_input, symptom_input)
     payload = JSON.generate(data_hash)
     response = RestClient.post("https://api.infermedica.com/v2/diagnosis", payload, headers={'App-Id' => app_id, 'App-Key' => app_key, 'Content-Type' => 'application/json'})
     diagnosis_hash = JSON.parse(response)
-    # puts diagnosis_hash["conditions"]
     diagnosis_names = diagnosis_hash["conditions"].map { |cond| cond["name"]}
     puts diagnosis_names
-    # binding.pry
-    # Disease.create(diagnosis_names)
-    # PatientDisease.create(patient_id, disease_id, diagnosis_names)
+    diagnosis_names.each do |name| 
+        disease = Disease.find_by(name: name)
+        PatientDisease.find_or_create_by(patient_id: patient.id, disease_id: disease.id)
+    end
 end
 
 
 
+# def  save_patient_disease(disease_id, patient_id)
+#     PatientDisease.find_or_create_by(disease_id:, patient_id:)
+# end
+
 # binding.pry
-
-# query = run_symptom_checker
-    # binding.pry
-# get_diagnosis_hash(query)
-
-puts "hello"
+puts 'hi'
