@@ -89,23 +89,25 @@ def welcome
             welcome
         end
     elsif response == "6"    
-        welcome 
+        welcome
+    else response 
     end
 end
 
 def disease_search
+    puts ""
     puts "Enter the disease you'd like to search for:"
     search_res = gets.chomp.capitalize
     disease_res = Disease.where("name like ?", "%#{search_res}%")
     puts format(disease_res.map(&:name))
     puts "Press 4 to search diseases again."
-    puts "Press 6 to return to main menu."
+    puts "Press any other key to return to main menu."
     run_again = STDIN.getch
-    if run_again == "6"
-        welcome
-    elsif run_again == "4"
+    if run_again == "4"
         disease_search
-    end 
+    else
+        welcome
+    end
 end
 
 def run_symptom_checker
@@ -179,14 +181,15 @@ def run_symptom_checker
     puts ""
     puts "Press 5 to view all of your possible diseases."
     puts ""
-    puts "Press any other key to exit."
+    puts "Press any other key to return to main menu."
     puts ""
     num_response = STDIN.getch
     if num_response == "9"
         run_symptom_checker
-    end
-    if num_response == "5"
+    elsif num_response == "5"
         view_patient_diseases
+    elsif
+        welcome
     end
 end
 
@@ -199,9 +202,9 @@ def view_patient_diseases
     patient_diseases = PatientDisease.where(patient_id: patient.id)
     result = patient_diseases.map {|pd| Disease.where(id: pd.disease_id).pluck(:name)}
     puts format(result)
-    puts "Press 6 to return to main menu."
+    puts "Press any key to return to main menu."
     vpd_response = STDIN.getch
-    if vpd_response == "6"
+    if vpd_response
         welcome
     end
 end
