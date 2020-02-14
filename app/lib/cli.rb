@@ -85,6 +85,8 @@ def welcome
         end
     elsif response == "5"    
         welcome   
+    elsif response == "5"
+        view_patient_diseases
     end
 end
 
@@ -106,14 +108,16 @@ def run_symptom_checker
     get_diagnosis(sex_input, age_input, symptom_input, patient)
     puts ""
     puts "Enter 9 to run Symptom Checker again."
-    puts "Enter 8 to view all of your possible diseases."
+    puts ""
+    puts "Enter 5 to view all of your possible diseases."
+    puts ""
     puts "Enter any other key to exit."
     puts ""
     num_response = gets.chomp
     if num_response == "9"
         run_symptom_checker
     end
-    if num_response == "8"
+    if num_response == "5"
         view_patient_diseases
     end
 end
@@ -134,7 +138,6 @@ def save_patient(name_input, age_input, sex_input)
 end
 
 def get_diagnosis(sex_input, age_input, symptom_input, patient)
-######added PatientDisease save
     app_id = "582e2307"
     app_key = "c98b58a9bf15795b1dacdfebe5375701"
     new_array = get_symptoms(symptom_input).map do |hash|
@@ -158,11 +161,12 @@ def get_diagnosis(sex_input, age_input, symptom_input, patient)
 end
 
 def view_patient_diseases
-    # returns all diseases after multiple runs of symptom checker
-    patient_disease = PatientDisease.all
-    result = patient_disease.map {|pd| Disease.where(id: pd.disease_id).pluck(:name)}
-    # result = Disease.where(id: PatientDisease.disease_id).pluck(:name)
-    puts result
+    puts format("Enter your name (exactly as you entered before)")
+    name_input = gets.chomp
+    patient = Patient.find_by(name: name_input)
+    patient_diseases = PatientDisease.where(patient_id: patient.id)
+    result = patient_diseases.map {|pd| Disease.where(id: pd.disease_id).pluck(:name)}
+    puts format(result)
 end
 
 # binding.pry
