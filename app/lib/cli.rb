@@ -59,47 +59,40 @@ def welcome
     end
 end
 
-def valid_sex?(input)
-    input == "male" || input == "female"
-end
-
-def sex_prompt
-    puts "Please enter 'male' or 'female'"
-    sex_input = gets.chomp.downcase
-    if valid_sex?(sex_input)
-        age_prompt
-    else
-        puts "Not a valid entry!"
-        sex_prompt
-    end
-end
-
-def age_prompt
-    puts "Please enter your age"
-    age_input = gets.chomp.to_i
-end
-
 def run_symptom_checker
     puts "Please enter your name"
     name_input = gets.chomp
-    sex_prompt
-    age_prompt
+    puts "Please enter 'male' or 'female'"
+    sex_input = gets.chomp.downcase
+    while sex_input != "male" && sex_input != "female"
+        puts "Not a valid entry!"
+        puts "Please enter 'male' or 'female'"
+        sex_input = gets.chomp.downcase
+    end
+    puts "Please enter your age"
+    age_input = gets.chomp.to_i
     puts "Enter a symptom"
     symptom_input = gets.chomp
     patient = save_patient(name_input, age_input, sex_input)
     get_diagnosis(sex_input, age_input, symptom_input, patient)
     puts ""
     puts "Enter 9 to run Symptom Checker again."
+    puts "Enter 8 to view all of your possible diseases."
     puts "Enter any other key to exit."
     puts ""
     num_response = gets.chomp
     if num_response == "9"
-        welcome
+        run_symptom_checker
+    end
+    if num_response == "8"
+        view_patient_diseases
     end
 end
 
-# def process_age_input(age_input)
-#     age_input.to_i
+# def run_again
+#     #might need this to avoid duplicates?
+#     puts "Enter a symptom"
+#     symptom_input = gets.chomp
 # end
 
 def get_symptoms(symptom_input)
@@ -118,6 +111,7 @@ def save_patient(name_input, age_input, sex_input)
 end
 
 def get_diagnosis(sex_input, age_input, symptom_input, patient)
+######added PatientDisease save
     app_id = "582e2307"
     app_key = "c98b58a9bf15795b1dacdfebe5375701"
     new_array = get_symptoms(symptom_input).map do |hash|
@@ -134,14 +128,18 @@ def get_diagnosis(sex_input, age_input, symptom_input, patient)
     diagnosis_hash = JSON.parse(response)
     diagnosis_names = diagnosis_hash["conditions"].map { |cond| cond["name"]}
     format(diagnosis_names)
-end
-
-def save_patient_disease
-    get_diagnosis(sex_input, age_input, symptom_input, patient)
     diagnosis_names.each do |name| 
         disease = Disease.find_by(name: name)
         PatientDisease.find_or_create_by(patient_id: patient.id, disease_id: disease.id)
     end
+end
+
+def view_patient_diseases
+    # returns all diseases after multiple runs of symptom checker
+    patient_disease = PatientDisease.all
+    result = patient_disease.map {|pd| Disease.where(id: pd.disease_id).pluck(:name)}
+    # result = Disease.where(id: PatientDisease.disease_id).pluck(:name)
+    puts result
 end
 
 # binding.pry
