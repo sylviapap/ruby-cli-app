@@ -15,6 +15,12 @@ symptoms = RestClient.get("https://api.infermedica.com/v2/symptoms", headers={'A
 symptoms_hash = JSON.parse(symptoms)
 ###
 
+### symptom search
+symptom_input = "cough"
+symptom_search = RestClient.get("https://api.infermedica.com/v2/search?phrase=#{symptom_input}&type=symptom", headers={'App-Id' => app_id, 'App-Key' => app_key})
+symptom_search_json = JSON.parse(symptom_search)
+###
+
 ### diseases
 result = RestClient.get("https://api.infermedica.com/v2/conditions", headers={'App-Id' => app_id, 'App-Key' => app_key})
 disease_array = JSON.parse(result)
@@ -22,7 +28,7 @@ name_array = disease_array.map do |hash|
   hash.select {|key, value| key >= "name"}
   end
 
-### search
+### overall search
 search_term = "cough"
 search = RestClient.get("https://api.infermedica.com/v2/search?phrase=#{search_term}", headers={'App-Id' => app_id, 'App-Key' => app_key})
 search_hash = JSON.parse(search)
