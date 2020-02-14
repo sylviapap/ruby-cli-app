@@ -1,2 +1,5 @@
 require_relative '../config/environment'
-run_symptom_checker
+# require_relative '../lib/cli.rb'
+
+# run_symptom_checker
+welcome
