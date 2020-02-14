@@ -118,12 +118,6 @@ def run_symptom_checker
     end
 end
 
-# def run_again
-#     #might need this to avoid duplicates?
-#     puts "Enter a symptom"
-#     symptom_input = gets.chomp
-# end
-
 def get_symptoms(symptom_input)
     app_id = "582e2307"
     app_key = "c98b58a9bf15795b1dacdfebe5375701"
