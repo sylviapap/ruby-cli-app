@@ -8,3 +8,5 @@ name_array = disease_array.map do |hash|
     end
 name_array.each {|disease| Disease.create(name: disease["name"])}
 
+
+# disease_array["name"].map {|disease| Disease.create(name: "#{disease["name"]}")}
