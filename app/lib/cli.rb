@@ -47,13 +47,13 @@ def welcome
     puts "4  -  To search for a possible disease, enter 4"
     puts "5  -  To view saved diseases, enter 5."
     puts "6  -  To start over, enter 6"
-    puts "7  -  To exit Symptom Checker, enter any other key."
+    puts "7  -  To exit Symptom Wizard, enter any other key."
     response = gets.chomp
     if response == "1"
         run_symptom_checker
     elsif response == "2"
         result = Disease.pluck(:name)  
-        puts result
+        puts format(result)
         puts "Enter 9 to return to Symptom Wizard"
         response_after_listing_diseases = gets.chomp
         if response_after_listing_diseases == "9"
@@ -78,7 +78,7 @@ def welcome
         puts "Enter the disease you'd like to search for."
         search_res = gets.chomp.capitalize
         disease_res = Disease.where("name like ?", "%#{search_res}%")
-        puts disease_res.map(&:name)
+        puts format(disease_res.map(&:name))
         puts "Enter 9 to return to Symptom Wizard."
         run_again = gets.chomp
         if run_again == "9"
