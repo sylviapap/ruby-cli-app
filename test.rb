@@ -21,11 +21,10 @@ disease_array = JSON.parse(result)
 name_array = disease_array.map do |hash|
   hash.select {|key, value| key >= "name"}
   end
-# Disease.create(name: 
-###
 
 ### search
-search = RestClient.get("https://api.infermedica.com/v2/search?phrase=cough", headers={'App-Id' => app_id, 'App-Key' => app_key})
+search_term = "flu"
+search = RestClient.get("https://api.infermedica.com/v2/search?phrase=#{search_term}", headers={'App-Id' => app_id, 'App-Key' => app_key})
 search_hash = JSON.parse(search)
 ###
 
@@ -35,7 +34,9 @@ risk_factors_hash = JSON.parse(risk_factors)
 ###
 
 ### diagnosis
-new_array = search_hash.map do |hash|
+response = RestClient.get("https://api.infermedica.com/v2/search?phrase=cough", headers={'App-Id' => app_id, 'App-Key' => app_key})
+response_hash = JSON.parse(response)
+new_array = response_hash.map do |hash|
   hash.delete_if {|key, value| key >= "label"}
   end
 array_of_hashes = new_array.each {|hash| hash['choice_id'] = 'present'}
