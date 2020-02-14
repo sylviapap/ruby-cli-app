@@ -50,8 +50,9 @@ def welcome
     puts "2  -  To view all possible diseases in the database, enter 2."
     puts "3  -  To search from a list of risk factors, enter 3."
     puts "4  -  To search for a possible disease, enter 4"
-    puts "5  -  To return to main menu, enter 5."
-    puts "6  -  To exit Symptom Checker, enter any other key."
+    puts "5  -  To view saved diseases, enter 5."
+    puts "6  -  To return to main menu, enter 6."
+    puts "7  -  To exit Symptom Checker, enter any other key."
     response = gets.chomp
     if response == "1"
         run_symptom_checker
