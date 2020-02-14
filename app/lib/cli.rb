@@ -7,21 +7,23 @@ def welcome
     puts "Welcome to Symptom Checker"
     puts "To check your symptoms against potential diseases, press 1."
     puts "To view all possible diseases in the database, press 2."
-    puts "To view all possible symptoms, press 3."
+    puts "To search the list of diseases, press 3."
     puts "To exit Symptom Checker, press any other key."
     response = gets.chomp
     if response == "1"
         run_symptom_checker
-        # puts "Press 9 to return to main menu"
     elsif response == "2"
         result = Disease.pluck(:name)  
         puts result
+        puts "Press 0 to return to Symptom Checker"
+        response_after_listing_diseases = gets.chomp
+        if response_after_listing_diseases == "0"
+            welcome
+        end
     elsif response == "3"
         ## get seeded symptom data from db
     elsif response == "4"
         ##exit SC
-    elsif response == "9"
-        welcome   
     end
  
 end
@@ -108,4 +110,4 @@ end
     # binding.pry
 # get_diagnosis_hash(query)
 
-puts "hello"
+# puts "hello"
