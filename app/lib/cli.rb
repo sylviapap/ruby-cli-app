@@ -2,6 +2,7 @@ require 'pry'
 require 'rest-client'
 require 'json'
 require 'io/console'
+require 'dotenv/load'
 
 def start
     curly_break
@@ -42,6 +43,9 @@ def format(result)
 end
 
 def welcome
+    app_id = ENV["INFERMEDICA_APP_ID"]
+    app_key = ENV["INFERMEDICA_APP_KEY"]
+
     puts ""
     puts "1  -  To check your symptoms against potential diseases, Press 1."
     puts "2  -  To view all possible diseases in the database, Press 2."
@@ -68,9 +72,7 @@ def welcome
     elsif response == "3"
         puts "Search for risk factors. For example, enter 'injury'"
         rfsearch = gets.chomp
-        app_id = "582e2307"
-        app_key = "c98b58a9bf15795b1dacdfebe5375701"
-        rf_req = RestClient.get("https://api.infermedica.com/v2/search?phrase=#{rfsearch}&type=risk_factor", headers={'App-Id' => app_id, 'App-Key' => app_key})
+        rf_req = RestClient.get("https://api.infermedica.com/v2/search?phrase=#{rfsearch}&type=risk_factor", headers={"App-Id" => "#{app_id}", "App-Key" => "#{app_key}"})
         rf_json = JSON.parse(rf_req)
         if rf_json.empty?
             format("Nothing found!")
@@ -118,11 +120,6 @@ end
 
 def run_symptom_checker
 
-        ###### auth
-
-    app_id = "582e2307"
-    app_key = "c98b58a9bf15795b1dacdfebe5375701"
-
         ##### prompts and inputs
 
     puts "Please enter your name:"
@@ -145,7 +142,7 @@ def run_symptom_checker
     
         ######### get symptoms
     
-    symptom_request = RestClient.get("https://api.infermedica.com/v2/search?phrase=#{symptom_input}&type=symptom", headers={'App-Id' => app_id, 'App-Key' => app_key})
+    symptom_request = RestClient.get("https://api.infermedica.com/v2/search?phrase=#{symptom_input}&type=symptom", headers={"App-Id" => "#{app_id}", "App-Key" => "#{app_key}"})
     symptom_json = JSON.parse(symptom_request)
     if symptom_json.empty?
         format("Nothing found!")
@@ -174,7 +171,7 @@ def run_symptom_checker
     'evidence' => evidence_requirement
     }
     payload = JSON.generate(data_hash)
-    d_request = RestClient.post("https://api.infermedica.com/v2/diagnosis", payload, headers={'App-Id' => app_id, 'App-Key' => app_key, 'Content-Type' => 'application/json'})
+    d_request = RestClient.post("https://api.infermedica.com/v2/diagnosis", payload, headers={"App-Id" => "#{app_id}", "App-Key" => "#{app_key}"})
     d_json = JSON.parse(d_request)
     d_names = d_json["conditions"].map { |cond| cond["name"]}
     if d_names.empty?
