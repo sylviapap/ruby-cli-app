@@ -2,7 +2,7 @@
 
 A simple CLI application for checking symptoms through the Infermedica API/database of symptoms and conditions. 
 
-Infermedica is free, but limited, so if the app is not working, it might be a result of maxed out requests. You can sign up for your own API ID/Key with Infermedica if you'd like, or notify us if the keys have expired :)
+Infermedica is free, but limited, so if the app is not working, it might be a result of maxed out requests :)
 
 # Install Instructions
 
